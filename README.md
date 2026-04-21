@@ -1,58 +1,225 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel Social Login (Google & Facebook OAuth)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+<!--
+Họ tên: Bùi Minh Đức
+Mã sinh viên: 23810310110
+Lớp: D18CNPM2
+-->
 
-## About Laravel
+## Thông tin sinh viên
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+| Thông tin | Chi tiết |
+|-----------|----------|
+| **Họ tên** | Bùi Minh Đức |
+| **Mã sinh viên** | 23810310110 |
+| **Lớp** | D18CNPM2 |
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Mô tả dự án
 
-## Learning Laravel
+Ứng dụng web Laravel cho phép người dùng đăng nhập bằng tài khoản **Google** và **Facebook** thông qua OAuth 2.0, sử dụng thư viện **Laravel Socialite**. Hệ thống tự động lưu thông tin người dùng vào database và quản lý phiên đăng nhập.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Tính năng chính
+- Đăng nhập bằng Google (OAuth 2.0)
+- Đăng nhập bằng Facebook (OAuth 2.0)
+- Tự động tạo tài khoản nếu chưa tồn tại
+- Hiển thị thông tin cá nhân sau đăng nhập
+- Chức năng đăng xuất
+- Xử lý lỗi đăng nhập
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## Yêu cầu hệ thống
 
-## Agentic Development
+- PHP >= 8.1
+- Composer
+- Laravel >= 10.x
+- MySQL / MariaDB
+- Tài khoản Google Developer Console
+- Tài khoản Facebook Developers
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+---
+
+## Cài đặt
+
+### 1. Clone repository
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/<your-username>/<repo-name>.git
+cd <repo-name>
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Cài đặt dependencies
 
-## Contributing
+```bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3. Tạo file .env
 
-## Code of Conduct
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 4. Cấu hình database trong `.env`
 
-## Security Vulnerabilities
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laravel_social_login
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 5. Chạy migration
 
-## License
+```bash
+php artisan migrate
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 6. Khởi động server
+
+```bash
+php artisan serve
+```
+
+Truy cập: `http://localhost:8000`
+
+---
+
+## Cấu hình Google OAuth
+
+### Bước 1: Tạo Google OAuth App
+
+1. Truy cập [console.cloud.google.com](https://console.cloud.google.com/)
+2. Tạo project mới → vào **APIs & Services → Credentials**
+3. Bấm **Create Credentials → OAuth 2.0 Client IDs**
+4. Chọn **Web Application**
+5. Thêm **Authorized redirect URIs**:
+   ```
+   http://localhost:8000/login/google/callback
+   ```
+6. Copy **Client ID** và **Client Secret**
+
+### Bước 2: Thêm vào `.env`
+
+```env
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_REDIRECT_URI=http://localhost:8000/login/google/callback
+```
+
+---
+
+## Cấu hình Facebook OAuth
+
+### Bước 1: Tạo Facebook App
+
+1. Truy cập [developers.facebook.com](https://developers.facebook.com/)
+2. Vào **My Apps → Create App → Consumer**
+3. Vào **Settings → Basic** → copy **App ID** và **App Secret**
+4. Vào **Trường hợp sử dụng → Đăng nhập bằng Facebook → Cài đặt**
+5. Thêm **Valid OAuth Redirect URI**:
+   ```
+   http://localhost:8000/login/facebook/callback
+   ```
+
+### Bước 2: Thêm vào `.env`
+
+```env
+FACEBOOK_CLIENT_ID=your_facebook_app_id
+FACEBOOK_CLIENT_SECRET=your_facebook_app_secret
+FACEBOOK_REDIRECT_URI=http://localhost:8000/login/facebook/callback
+```
+
+---
+
+## Cấu trúc thư mục chính
+
+```
+app/
+├── Http/
+│   └── Controllers/
+│       └── Auth/
+│           ├── GoogleController.php      # Xử lý Google OAuth
+│           └── FacebookController.php   # Xử lý Facebook OAuth
+├── Models/
+│   └── User.php
+database/
+└── migrations/
+    └── xxxx_add_social_fields_to_users_table.php
+resources/
+└── views/
+    ├── auth/
+    │   └── login.blade.php              # Trang đăng nhập
+    └── dashboard.blade.php              # Trang sau đăng nhập
+routes/
+└── web.php
+```
+
+---
+
+## Cấu trúc database
+
+Bảng `users` bổ sung các cột:
+
+| Cột | Kiểu | Mô tả |
+|-----|------|-------|
+| `provider` | varchar | Nhà cung cấp (google / facebook) |
+| `provider_id` | varchar | ID từ nhà cung cấp |
+| `avatar` | varchar | URL ảnh đại diện |
+| `student_id` | varchar | Mã sinh viên |
+
+---
+
+## Luồng hoạt động
+
+```
+User click "Login with Google/Facebook"
+        ↓
+Redirect đến trang xác thực của provider
+        ↓
+User đồng ý cấp quyền
+        ↓
+Provider redirect về callback URL
+        ↓
+Kiểm tra provider_id trong database
+    ├── Đã tồn tại → Đăng nhập
+    └── Chưa tồn tại → Tạo tài khoản mới → Đăng nhập
+        ↓
+Redirect về trang Dashboard
+```
+
+---
+
+## Xử lý lỗi
+
+| Lỗi | Xử lý |
+|-----|-------|
+| User từ chối quyền | Redirect về trang login với thông báo lỗi |
+| Token không hợp lệ | Bắt Exception, redirect về login |
+| Email trùng lặp | Merge tài khoản theo email |
+| Facebook không trả về email | Dùng `provider_id@facebook-user.local` |
+
+---
+
+## Demo
+
+> Video demo (3–5 phút) bao gồm:
+> - Quá trình đăng nhập bằng Google
+> - Quá trình đăng nhập bằng Facebook
+> - Hiển thị thông tin cá nhân (Họ tên, Mã sinh viên: **23810310110**)
+> - Chức năng đăng xuất
+
+---
+
+## Công nghệ sử dụng
+
+- **Framework**: Laravel 10/11
+- **Package**: [Laravel Socialite](https://laravel.com/docs/socialite)
+- **Database**: MySQL
+- **Frontend**: Blade Template + Bootstrap 5
+- **OAuth**: Google OAuth 2.0 + Facebook OAuth 2.0
